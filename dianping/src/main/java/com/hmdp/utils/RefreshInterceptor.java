@@ -32,7 +32,6 @@ public class RefreshInterceptor implements HandlerInterceptor {
             return true;
         }
         //3.从redis中获取用户token
-        log.info("REDISKEY{}",  LOGIN_USER_KEY+token);
         Map<Object, Object> userMap = stringRedisTemplate.opsForHash().entries(LOGIN_USER_KEY + token);
         if (userMap == null){
             //2.未登录则返回未登录结果
@@ -41,7 +40,6 @@ public class RefreshInterceptor implements HandlerInterceptor {
         User user = BeanUtil.toBean(userMap, User.class);
         //4.保存用户信息
         UserHolder.saveUser(user);
-        log.info("user{}", user);
         stringRedisTemplate.expire(LOGIN_USER_KEY + token, RedisConstants.LOGIN_USER_TTL, TimeUnit.SECONDS);
         return true;
     }
