@@ -33,7 +33,7 @@ public class RefreshInterceptor implements HandlerInterceptor {
         }
         //3.从redis中获取用户token
         Map<Object, Object> userMap = stringRedisTemplate.opsForHash().entries(LOGIN_USER_KEY + token);
-        if (userMap == null){
+        if (userMap.isEmpty()){
             //2.未登录则返回未登录结果
             return true;
         }
