@@ -2,17 +2,13 @@ package com.hmdp.utils;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
-import com.hmdp.dto.Result;
-import com.hmdp.entity.Shop;
-import org.apache.ibatis.javassist.bytecode.stackmap.TypeData;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
-
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import static com.hmdp.utils.RedisConstants.*;
-import static com.hmdp.utils.RedisConstants.LOCK_SHOP_KEY;
+
 
 /**
  * @Description: 缓存工具类
