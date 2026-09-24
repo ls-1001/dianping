@@ -14,13 +14,13 @@ public class Lock {
     @Resource
     private StringRedisTemplate stringRedisTemplate;
 
-    public boolean isLocked(Long id) {
-        Boolean success = stringRedisTemplate.opsForValue().setIfAbsent(LOCK_SHOP_KEY + id, "1", LOCK_SHOP_TTL, TimeUnit.SECONDS);
+    public boolean isLocked(String key, Long id) {
+        Boolean success = stringRedisTemplate.opsForValue().setIfAbsent(key + id, "1", LOCK_SHOP_TTL, TimeUnit.SECONDS);
         return Boolean.TRUE.equals(success);
     }
 
-    public void unlock() {
-        stringRedisTemplate.delete(LOCK_SHOP_KEY);
+    public void unlock(String key, Long id) {
+        stringRedisTemplate.delete(key + id);
     }
 
 }
