@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.util.concurrent.TimeUnit;
 
-import static com.hmdp.utils.RedisConstants.LOCK_SHOP_KEY;
+//import static com.hmdp.utils.RedisConstants.LOCK_SHOP_KEY;
 import static com.hmdp.utils.RedisConstants.LOCK_SHOP_TTL;
 
 @Component

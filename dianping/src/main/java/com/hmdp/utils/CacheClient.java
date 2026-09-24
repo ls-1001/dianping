@@ -27,10 +27,10 @@ public class CacheClient {
 
     /**
      * 将任意Java对象序列化为JSON并存储在Redis中
-     * @param key
-     * @param value
-     * @param time
-     * @param unit
+     * @param key Redis键
+     * @param value 要缓存的对象
+     * @param time 过期时间数值
+     * @param unit 过期时间单位
      */
     public void set(String key, Object value, Long time , TimeUnit unit) {
         stringRedisTemplate.opsForValue().set(key, JSONUtil.toJsonStr(value), time, unit);
@@ -41,15 +41,15 @@ public class CacheClient {
     /**
      * 使用setnx互斥锁的方式防止缓存击穿
      * 通过缓存空值的方式防止缓存穿透
-     * @param Key
-     * @param Id
-     * @param time
-     * @param unit
-     * @param lockKey
-     * @param type
-     * @param dbFallback
-     * @param <R>
-     * @return
+     * @param Key Redis键前缀
+     * @param Id 数据ID
+     * @param time 过期时间数值
+     * @param unit 过期时间单位
+     * @param lockKey 锁的Redis键前缀
+     * @param type 返回对象的Class类型
+     * @param dbFallback 数据库查询回源函数
+     * @param <R> 返回类型
+     * @return 查询到的对象，若缓存空值则返回null
      */
     public <R> R queryWithPassThrough(String Key , Long Id , Long time , TimeUnit unit , String lockKey , Class<R> type , Function<Long, R> dbFallback) {
         //先从redis缓存中查询
