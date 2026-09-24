@@ -18,8 +18,8 @@ import static com.hmdp.utils.RedisConstants.*;
  */
 @Component
 public class CacheClient {
-    private StringRedisTemplate stringRedisTemplate;
-    private Lock lock;
+    private final StringRedisTemplate stringRedisTemplate;
+    private final Lock lock;
 
     public CacheClient(StringRedisTemplate stringRedisTemplate , Lock lock) {
         this.stringRedisTemplate = stringRedisTemplate;
