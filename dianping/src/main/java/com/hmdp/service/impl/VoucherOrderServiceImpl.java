@@ -61,7 +61,7 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
             return Result.fail("用户未登录");
         }
         //判断用户是否已经购买过该优惠券
-        if (this.query().eq("user_id", userId).eq("voucher_id", voucherId).one() != null) {
+        if (this.query().eq("user_id", userId).eq("voucher_id", voucherId).count() > 0) {
             return Result.fail("用户已经购买过该优惠券");
         }
         //扣减优惠券库存
