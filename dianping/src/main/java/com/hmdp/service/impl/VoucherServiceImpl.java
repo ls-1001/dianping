@@ -7,11 +7,16 @@ import com.hmdp.mapper.VoucherMapper;
 import com.hmdp.entity.SeckillVoucher;
 import com.hmdp.service.ISeckillVoucherService;
 import com.hmdp.service.IVoucherService;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static com.hmdp.utils.RedisConstants.SECKILL_STOCK_KEY;
+
 
 /**
  * <p>
@@ -26,6 +31,8 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
 
     @Resource
     private ISeckillVoucherService seckillVoucherService;
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
 
     @Override
     public Result queryVoucherOfShop(Long shopId) {
@@ -47,5 +54,10 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
         seckillVoucher.setBeginTime(voucher.getBeginTime());
         seckillVoucher.setEndTime(voucher.getEndTime());
         seckillVoucherService.save(seckillVoucher);
+        //优惠券库存保存到Redis 并设置过期时间为秒杀活动结束时间
+        //获取开始结束时间转换成秒   活动结束redis数据自动删除
+        long startTime = seckillVoucher.getBeginTime().toInstant(java.time.ZoneOffset.of("+8")).getEpochSecond();
+        long endTime = seckillVoucher.getEndTime().toInstant(java.time.ZoneOffset.of("+8")).getEpochSecond();
+        stringRedisTemplate.opsForValue().set(SECKILL_STOCK_KEY + seckillVoucher.getVoucherId(), seckillVoucher.getStock().toString(), endTime - startTime, TimeUnit.SECONDS);
     }
 }
