@@ -18,6 +18,7 @@ import javax.annotation.Resource;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static com.hmdp.utils.RedisConstants.*;
@@ -56,9 +57,11 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
         if (userId == null) {
             return Result.fail("用户未登录");
         }
+        //生成随机uuid  防止锁被其他用户释放
+        String uuid = UUID.randomUUID().toString();
         try {
-            //添加用户锁  防止线程并发同一用户并发重复购买
-            if (!lock.isLocked(LOCK_SECKILL_KEY,userId,LOCK_SECKILL_TTL)) {
+            //添加用户锁  防止线程并发同一用户并发重复购买     加锁时同时setnx设值和设置过期时间，避免死锁
+            if (!lock.isLocked(LOCK_SECKILL_KEY, userId,uuid,LOCK_SECKILL_TTL)) {
                return Result.fail("服务器忙，请稍后再试");
             }
             //判断用户是否已经购买过该优惠券
@@ -68,8 +71,8 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
             }
             return Result.ok(createVoucherOrder(voucherId, userId));
         } finally {
-            //释放用户锁
-            lock.unlock(LOCK_SECKILL_KEY,userId);
+            //释放用户锁      拼入uuid防止锁被其他用户释放
+            lock.unlock(LOCK_SECKILL_KEY, userId , uuid);
         }
     }
 
