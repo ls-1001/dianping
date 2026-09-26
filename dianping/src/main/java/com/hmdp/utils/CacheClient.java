@@ -64,7 +64,7 @@ public class CacheClient {
         //解决缓存击穿问题
         //1.获取锁
         try {
-            boolean isLocked = lock.isLocked(lockKey, Id);
+            boolean isLocked = lock.isLocked(lockKey, Id ,LOCK_SHOP_TTL);
             if (!isLocked){
                 Thread.sleep(500);
                 queryWithPassThrough(Key, Id, time, unit, lockKey, type, dbFallback);

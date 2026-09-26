@@ -6,6 +6,7 @@ import com.hmdp.entity.VoucherOrder;
 import com.hmdp.mapper.VoucherOrderMapper;
 import com.hmdp.service.IVoucherOrderService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.hmdp.utils.Lock;
 import com.hmdp.utils.UserHolder;
 import org.springframework.aop.framework.AopContext;
 import org.springframework.context.annotation.Lazy;
@@ -19,8 +20,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.concurrent.TimeUnit;
 
-import static com.hmdp.utils.RedisConstants.SECKILL_STOCK_KEY;
-import static com.hmdp.utils.RedisConstants.SECKILL_STOCK_TTL;
+import static com.hmdp.utils.RedisConstants.*;
 
 /**
  * <p>
@@ -40,6 +40,10 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
     @Lazy
     @Resource
     private IVoucherOrderService self;
+
+    @Resource
+    private Lock lock;
+
     /**
      * 秒杀优惠券
      * @param  voucherId 优惠券id
@@ -52,14 +56,20 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
         if (userId == null) {
             return Result.fail("用户未登录");
         }
-        //添加用户锁  防止线程并发同一用户并发重复购买
-        synchronized (userId.toString().intern()){
+        try {
+            //添加用户锁  防止线程并发同一用户并发重复购买
+            if (!lock.isLocked(LOCK_SECKILL_KEY,userId,LOCK_SECKILL_TTL)) {
+               return Result.fail("服务器忙，请稍后再试");
+            }
             //判断用户是否已经购买过该优惠券
             int count = this.query().eq("user_id", userId).eq("voucher_id", voucherId).count();
             if ( count > 0) {
                 return Result.fail("用户已经购买过该优惠券");
             }
             return Result.ok(createVoucherOrder(voucherId, userId));
+        } finally {
+            //释放用户锁
+            lock.unlock(LOCK_SECKILL_KEY,userId);
         }
     }
 

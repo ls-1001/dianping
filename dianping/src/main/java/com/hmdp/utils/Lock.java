@@ -14,8 +14,8 @@ public class Lock {
     @Resource
     private StringRedisTemplate stringRedisTemplate;
 
-    public boolean isLocked(String key, Long id) {
-        Boolean success = stringRedisTemplate.opsForValue().setIfAbsent(key + id, "1", LOCK_SHOP_TTL, TimeUnit.SECONDS);
+    public boolean isLocked(String key, Long id ,Long time) {
+        Boolean success = stringRedisTemplate.opsForValue().setIfAbsent(key + id, "1", time, TimeUnit.SECONDS);
         return Boolean.TRUE.equals(success);
     }
 
