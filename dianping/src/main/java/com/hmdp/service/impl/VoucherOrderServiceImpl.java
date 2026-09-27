@@ -8,19 +8,14 @@ import com.hmdp.service.IVoucherOrderService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hmdp.utils.Lock;
 import com.hmdp.utils.UserHolder;
-import org.springframework.aop.framework.AopContext;
-import org.springframework.context.annotation.Lazy;
+//import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import javax.annotation.Resource;
-
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-
 import static com.hmdp.utils.RedisConstants.*;
 
 /**
@@ -38,9 +33,9 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
     private StringRedisTemplate stringRedisTemplate;
     @Resource
     private SeckillVoucherServiceImpl seckillVoucherService;
-    @Lazy
-    @Resource
-    private IVoucherOrderService self;
+//    @Lazy
+//    @Resource
+//    private IVoucherOrderService self;
 
     @Resource
     private Lock lock;
@@ -80,7 +75,7 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
         //扣减优惠券库存   判断和扣减原子操作
         //TODO MQ异步写入数据库
         Long stock = stringRedisTemplate.opsForValue().decrement(SECKILL_STOCK_KEY + voucherId);
-        if (stock < 0) {
+        if (stock == null ||stock < 0) {
             //查询数据库获取库存
             SeckillVoucher seckillVoucher = seckillVoucherService.getById(voucherId);
             if (seckillVoucher == null || seckillVoucher.getStock() <= 0) {

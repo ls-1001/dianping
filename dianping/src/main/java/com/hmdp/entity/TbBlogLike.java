@@ -24,7 +24,7 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("tb_blog_like")
-@ApiModel(value="TbBlogLike对象", description="")
+@ApiModel(value="TbBlogLike对象")
 public class TbBlogLike implements Serializable {
 
     private static final long serialVersionUID = 1L;

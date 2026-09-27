@@ -1,7 +1,6 @@
 package com.hmdp.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.hmdp.dto.Result;
 import com.hmdp.entity.Blog;
 import com.hmdp.entity.TbBlogLike;
 import com.hmdp.entity.User;
@@ -15,9 +14,7 @@ import org.springframework.data.redis.core.DefaultTypedTuple;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
-
 import javax.annotation.Resource;
-
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -64,8 +61,7 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements IB
     public void likeBlog(Long id) {
         //获取当前用户
         User user = UserHolder.getUser();
-        //获取当前时间
-        LocalDateTime now = LocalDateTime.now();
+
         //从redis中查询当前用户是否已经点赞
         Double score = stringRedisTemplate.opsForZSet().score(BLOG_LIKED_KEY + id, user.getId().toString());
 
@@ -77,6 +73,8 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements IB
             //数据库查询
             List<TbBlogLike> likeUser = tbBlogLikeService.getLikeUserByBlogId(id);
             if (likeUser.isEmpty()){
+                //获取当前时间
+                LocalDateTime now = LocalDateTime.now();
                 // 如果用户没有点赞，则点赞
                 stringRedisTemplate.opsForZSet().add(BLOG_LIKED_KEY + id, user.getId().toString(), now.toInstant(ZoneOffset.of("+8")).toEpochMilli());
                 //TODO REDIS 点赞数据定时写入数据库  （tb_bloglike,  blog的liked字段）
@@ -88,7 +86,7 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements IB
             Set<ZSetOperations.TypedTuple<String>> typedTuples = likeUser.stream()
                     .map(like -> {
                         long likeTime = like.getCreateTime().toInstant(ZoneOffset.of("+8")).toEpochMilli();
-                        return new DefaultTypedTuple<String>(like.getUserId().toString(), (double) likeTime);
+                        return new DefaultTypedTuple<>(like.getUserId().toString(), (double) likeTime);
                     }).collect(Collectors.toSet());
             stringRedisTemplate.opsForZSet().add(BLOG_LIKED_KEY + id, typedTuples);
             stringRedisTemplate.expire(BLOG_LIKED_KEY + id, 7, TimeUnit.DAYS);
@@ -99,8 +97,6 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements IB
     public boolean isLikedByUser(Long id) {
         //获取当前用户
         User user = UserHolder.getUser();
-        //获取当前时间
-        LocalDateTime now = LocalDateTime.now();
         //从redis中查询当前用户是否已经点赞
         Double score = stringRedisTemplate.opsForZSet().score(BLOG_LIKED_KEY + id, user.getId().toString());
         if (score == null) {

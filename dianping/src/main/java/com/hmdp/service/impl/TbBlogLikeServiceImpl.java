@@ -22,13 +22,12 @@ public class TbBlogLikeServiceImpl extends ServiceImpl<TbBlogLikeMapper, TbBlogL
     /**
      * 根据博文id获取点赞用户
      *
-     * @param id
-     * @return
+     * @param id  博文id
+     * @return  点赞用户列表
      */
     @Override
     public List<TbBlogLike> getLikeUserByBlogId(Long id) {
         // 根据博文id获取点赞用户
-        List<TbBlogLike> likelist = lambdaQuery().eq(TbBlogLike::getBlogId, id).list();
-        return likelist;
+        return lambdaQuery().eq(TbBlogLike::getBlogId, id).list();
     }
 }

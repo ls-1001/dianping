@@ -9,14 +9,10 @@ import com.hmdp.dto.UserDTO;
 import com.hmdp.entity.User;
 import com.hmdp.mapper.UserMapper;
 import com.hmdp.service.IUserService;
-import com.hmdp.utils.RedisConstants;
 import com.hmdp.utils.RegexUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
@@ -24,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-
 import static com.hmdp.utils.RedisConstants.*;
 
 /**
@@ -74,7 +69,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 //        }
         //从redis获取验证码
         if (loginForm.getCode() != null){
-            String code = (String) stringRedisTemplate.opsForValue().get(LOGIN_CODE_KEY + loginForm.getPhone());
+            String code = stringRedisTemplate.opsForValue().get(LOGIN_CODE_KEY + loginForm.getPhone());
             if (code == null || !code.equals(loginForm.getCode())) {
                 return Result.fail("验证码无效");
             }
