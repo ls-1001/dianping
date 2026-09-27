@@ -20,7 +20,9 @@ import org.springframework.web.client.RestTemplate;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import static com.hmdp.utils.RedisConstants.*;
@@ -103,5 +105,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         stringRedisTemplate.opsForHash().putAll(LOGIN_USER_KEY+token,stringMap);
         stringRedisTemplate.expire(LOGIN_USER_KEY+token, LOGIN_USER_TTL, TimeUnit.SECONDS);  //设置过期时间
         return Result.ok(token);
+    }
+
+    @Override
+    public List<User> getByIds(Set<String> range) {
+        return query().in("id", range).list();
     }
 }

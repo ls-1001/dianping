@@ -65,7 +65,7 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
                return Result.fail("服务器忙，请稍后再试");
             }
             //判断用户是否已经购买过该优惠券
-            int count = this.query().eq("user_id", userId).eq("voucher_id", voucherId).count();
+            Long count = this.query().eq("user_id", userId).eq("voucher_id", voucherId).count();
             if ( count > 0) {
                 return Result.fail("用户已经购买过该优惠券");
             }
