@@ -23,6 +23,8 @@ public class RedisConstants {
 
     public static final String BLOG_LIKED_KEY = "blog:liked:";
     public static final String FEED_KEY = "feed:";
+    /** 用户关注集合，key格式：follows:{userId} */
+    public static final String FOLLOW_USER_KEY = "follows:";
     public static final String SHOP_GEO_KEY = "shop:geo:";
     public static final String USER_SIGN_KEY = "sign:";
 }
