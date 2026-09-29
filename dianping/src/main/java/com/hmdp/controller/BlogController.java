@@ -32,13 +32,7 @@ public class BlogController {
 
     @PostMapping
     public Result saveBlog(@RequestBody Blog blog) {
-        // 获取登录用户
-        User user = UserHolder.getUser();
-        blog.setUserId(user.getId());
-        // 保存探店博文
-        blogService.save(blog);
-        // 返回id
-        return Result.ok(blog.getId());
+        return Result.ok(blogService.saveBlog(blog));
     }
 
     @PutMapping("/like/{id}")
@@ -87,4 +81,15 @@ public class BlogController {
     public Result queryBlogById(@PathVariable("id") Long id) {
         return Result.ok(blogService.getBlogById(id));
     }
+
+    /**
+     * 查询当前用户关注的博主发布的博客
+     */
+    @GetMapping("/of/follow")
+    public Result queryBlogOfFollow(
+            @RequestParam(value = "lastId") Long max , @RequestParam(value = "offset", defaultValue = "0") Long offset) {
+        return Result.ok(blogService.queryBlogOfFollow(max, offset));
+
+    }
+
 }

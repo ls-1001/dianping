@@ -117,7 +117,6 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
 
     /**
      * 确保关注集合存在于Redis，不存在则从数据库回源重建
-     *
      * @param userId 用户id
      */
     private void ensureFollowSet(Long userId) {
